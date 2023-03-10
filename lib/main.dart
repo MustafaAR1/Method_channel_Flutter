@@ -53,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var channel = const MethodChannel('mycolor');
   var calculationChannel = const MethodChannel('calculationChannel');
+  var subtractChannel = const MethodChannel('subtractChannel');
 
   setColor(clr) {
     setState(() {
@@ -68,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _num1 = 0;
   int _num2 = 0;
   int _sum = 0;
+  int _subtract = 0;
 
   Future<void> _addNumbers() async {
     try {
@@ -84,10 +86,26 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> subtract() async {
+    try {
+      final int result = await subtractChannel
+          .invokeMethod('subtract', {'num1': 1, 'num2': 4});
+      setState(() {
+        _subtract = result;
+      });
+    } on PlatformException catch (e) {
+      setState(() {
+        _subtract = 0;
+      });
+      print("Failed to add numbers: ${e.message}");
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     _addNumbers();
+    subtract();
   }
 
   @override
@@ -102,7 +120,10 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              _sum.toString(),
+              "add: ${_sum.toString()}",
+            ),
+            Text(
+              "subtract: ${_subtract.toString()}",
             ),
             ElevatedButton(
                 onPressed: () {

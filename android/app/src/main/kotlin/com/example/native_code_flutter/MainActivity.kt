@@ -10,6 +10,8 @@ class MainActivity : FlutterActivity() {
 
     var channelName = "mycolor";
     var calculateTwoNumbers = "calculationChannel";
+
+    var subtractTwoNumbers = "subtractChannel";
     
 
     fun handleMethodCall(call: MethodCall, result: Result) {
@@ -20,7 +22,9 @@ class MainActivity : FlutterActivity() {
     private fun add(num1:Int,num2:Int): Int {
         return num1+num2;
     }
-
+    private  fun subtract(num1:Int,num2:Int): Int {
+    return num2 - num1;
+}
 
     // fun handleBatteryCall(call: MethodCall,result: Result) {
     //     if(call.method == "batteryFunction") {
@@ -35,8 +39,23 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
     
          var channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, calculateTwoNumbers);
+         var colorSwitchChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName);
+         var subtractChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, subtractTwoNumbers);
+
+        subtractChannel.setMethodCallHandler {call,result ->
+                    if(call.method == "subtract") {
+                        val num1 = call.argument<Int>("num1");
+                        val num2 = call.argument<Int>("num2");
+                        if(num1!=null && num2!=null) {
+                            val sub  = subtract(num1,num2);
+                            result.success(sub);
+
+                        }
+                    }
+
+        }
+
          channel.setMethodCallHandler { call, result ->
-             handleMethodCall(call,result);
 
              if (call.method == "add") {
                  val num1 = call.argument<Int>("num1")
@@ -52,5 +71,10 @@ class MainActivity : FlutterActivity() {
                  result.notImplemented()
              }
          }
+         colorSwitchChannel.setMethodCallHandler { call, result ->
+            handleMethodCall(call,result);
+
+             }
+         }
     }
-}
+
