@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var channel = const MethodChannel('mycolor');
   var calculationChannel = const MethodChannel('calculationChannel');
   var subtractChannel = const MethodChannel('subtractChannel');
+  var cameraChannel = const MethodChannel('cameraChannel');
 
   setColor(clr) {
     setState(() {
@@ -64,6 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void changeColor() async {
     var res = await channel.invokeMethod('changeColor');
     setColor(res);
+  }
+
+  Future<void> openCam() async {
+    await cameraChannel.invokeMethod('openCamera');
   }
 
   int _num1 = 0;
@@ -131,7 +136,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 child: const Text('Flutter code')),
             ElevatedButton(
-                onPressed: changeColor, child: const Text('Native code'))
+                onPressed: changeColor, child: const Text('Native code')),
+            ElevatedButton(
+                onPressed: () async {
+                  await openCam();
+                },
+                child: const Text('open camera'))
           ],
         ),
       ),

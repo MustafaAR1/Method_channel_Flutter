@@ -1,5 +1,7 @@
 package com.example.native_code_flutter
 
+import android.content.Intent
+import android.provider.MediaStore
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -12,7 +14,12 @@ class MainActivity : FlutterActivity() {
     var calculateTwoNumbers = "calculationChannel";
 
     var subtractTwoNumbers = "subtractChannel";
-    
+    var cameraChannel = "cameraChannel";
+
+    fun openCamera() {
+        val intent =  Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        activity.startActivityForResult(intent, 1)
+    }
 
     fun handleMethodCall(call: MethodCall, result: Result) {
         if (call.method == "changeColor") {
@@ -41,7 +48,14 @@ class MainActivity : FlutterActivity() {
          var channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, calculateTwoNumbers);
          var colorSwitchChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName);
          var subtractChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, subtractTwoNumbers);
+         var mycameraChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, cameraChannel);
+        
+         mycameraChannel.setMethodCallHandler {call,result ->
+                    if(call.method == "openCamera") {
+                        result.success(openCamera())
+                    }
 
+        }
         subtractChannel.setMethodCallHandler {call,result ->
                     if(call.method == "subtract") {
                         val num1 = call.argument<Int>("num1");
@@ -56,7 +70,6 @@ class MainActivity : FlutterActivity() {
         }
 
          channel.setMethodCallHandler { call, result ->
-
              if (call.method == "add") {
                  val num1 = call.argument<Int>("num1")
                  val num2 = call.argument<Int>("num2")
